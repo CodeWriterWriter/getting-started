@@ -14,8 +14,9 @@ var pet = seneca.make('pet')
 pet.name = 'Johnathon'
 pet.type = 'cat'
 var id = null
-pet.save$(function (err, foo) {
-  id = foo.id
+pet.save$(function (err, data) {
+  id = data.id
+  console.log(data.name + ": " + id)
 })
 // Add the route
 server.route({
