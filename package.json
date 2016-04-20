@@ -1,0 +1,27 @@
+{
+  "name": "seneca-getting-started",
+  "version": "0.0.1",
+  "description": "introduction to seneca",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeWriterWriter/getting-started.git"
+  },
+  "author": "Jane Quinn (https://github.com/CodeWriterWriter)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CodeWriterWriter/getting-started/issues"
+  },
+  "homepage": "https://github.com/CodeWriterWriter/getting-started#readme",
+  "dependencies": {
+    "hapi": "^13.3.0",
+    "seneca": "^2.0.1",
+    "seneca-entity": "0.0.1"
+  }
+}
