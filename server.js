@@ -13,14 +13,17 @@ server.connection({
 var pet = seneca.make('pet')
 pet.name = 'Johnathon'
 pet.type = 'cat'
-pet.save$()
+var id = null
+pet.save$(function (err, foo) {
+  id = foo.id
+})
 // Add the route
 server.route({
     method: 'GET',
     path:'/hello',
     handler: function (request, reply) {
 
-        return reply(pet.data$());
+        return reply(pet.load$(id));
     }
 });
 
