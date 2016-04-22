@@ -1,6 +1,8 @@
 'use strict';
 var _ = require('lodash');
+const Path = require('path');
 const Hapi = require('hapi');
+const Inert = require('inert');
 var seneca = require('seneca')()
 seneca.use('entity')
 
@@ -29,7 +31,18 @@ function setupData(cb) {
 
 
 // Create a server with a host and port
-const server = new Hapi.Server();
+const server = new Hapi.Server({
+    connections: {
+        routes: {
+            files: {
+                relativeTo: Path.join(__dirname, 'public')
+            }
+        }
+    }
+});
+
+server.register(Inert, () => {});
+
 server.connection({
     host: 'localhost',
     port: 8000
@@ -52,6 +65,9 @@ server.route({
 
   }
 })
+/*
+ curl command for list: curl -X GET localhost:8000/api/pet/list
+*/
 server.route({
   method: 'GET',
   path: '/api/pet/list',
@@ -65,16 +81,27 @@ server.route({
 
   }
 })
-/*server.route({
-  method: 'put',
+server.route({
+  method: 'GET',
+  path: '/api/pet/form',
+  handler: function (request, reply) {
+      file : './public/index.html'
+  }
+})
+/*
+curl command: curl -X PUT localhost:8000/api/pet/{id}/{name}/{type}
+*/
+server.route({
+  method: 'PUT',
   path: '/api/pet/{id}/{name}/{type}',
   handler: function (request, reply) {
     var pet = seneca.make('pet');
 
     pet.load$({ id: request.params.id}, function(err, data) {
       //console.log(data);
-      pet.name = name
-      pet.type = type
+      pet.id = request.params.id
+      pet.name = request.params.name
+      pet.type = request.params.type
       pet.save$(function(err, data) {
         reply(data);
       })
@@ -82,6 +109,9 @@ server.route({
 
   }
 })
+/*
+curl command: curl -X PUT localhost:8000/api/pet/{id}/{name}
+*/
 server.route({
   method: 'PUT',
   path: '/api/pet/{id}/{name}',
@@ -98,7 +128,7 @@ server.route({
     })
 
   }
-})*/
+})
 setupData(function() {
   // Start the server
   server.start((err) => {
