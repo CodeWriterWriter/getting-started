@@ -21,6 +21,7 @@
   "homepage": "https://github.com/CodeWriterWriter/getting-started#readme",
   "dependencies": {
     "hapi": "^13.3.0",
+    "lodash": "^4.11.1",
     "seneca": "^2.0.1",
     "seneca-entity": "0.0.1"
   }
