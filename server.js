@@ -31,23 +31,21 @@ function setupData(cb) {
 
 
 // Create a server with a host and port
-const server = new Hapi.Server({
-    connections: {
-        routes: {
-            files: {
-                relativeTo: Path.join(__dirname, 'public')
-            }
-        }
-    }
-});
-
-server.register(Inert, () => {});
+const server = new Hapi.Server();
+server.register(require('vision'), (err) => {
 
 server.connection({
     host: 'localhost',
     port: 8000
 });
 
+server.views({
+  engines: {
+    html: require ('handlebars')
+  },
+  relativeTo: __dirname,
+  path: 'public'
+})
 
 // Add the route
 
@@ -65,6 +63,39 @@ server.route({
 
   }
 })
+server.route({
+  method: 'DELETE',
+  path: '/api/pet/{id}',
+  handler: function (request, reply) {
+    var pet = seneca.make('pet');
+
+    pet.remove$({ id: request.params.id}, function(err, data) {
+      console.log("deleted");
+      reply(data)
+    })
+
+  }
+})
+server.route({
+  method: 'PUT',
+  path: '/api/pet/{id}',
+  handler: function (request, reply) {
+    var pet = seneca.make('pet');
+    /*
+    curl -d name=tom -d type=hat  -X PUT localhost:8000/api/pet/b2uwe7
+    */
+    pet.load$({ id: request.params.id}, function(err, data) {
+      pet.name = request.payload.name || pet.name
+      pet.type = request.payload.type || pet.type
+      pet.id = request.params.id
+      pet.save$(function (err, data) {
+        //console.log(data);
+        reply(data);
+      })
+    })
+
+  }
+})
 /*
  curl command for list: curl -X GET localhost:8000/api/pet/list
 */
@@ -75,7 +106,7 @@ server.route({
     var pet = seneca.make('pet');
 
     pet.list$(function(err, data) {
-      console.log(data);
+      //console.log(data);
       reply(data);
     })
 
@@ -83,15 +114,15 @@ server.route({
 })
 server.route({
   method: 'GET',
-  path: '/api/pet/form',
+  path: '/api/pet/submit/form',
   handler: function (request, reply) {
-      file : './public/index.html'
+      reply.view('./index.html')
   }
 })
 /*
 curl command: curl -X PUT localhost:8000/api/pet/{id}/{name}/{type}
 */
-server.route({
+/*server.route({
   method: 'PUT',
   path: '/api/pet/{id}/{name}/{type}',
   handler: function (request, reply) {
@@ -108,11 +139,11 @@ server.route({
     })
 
   }
-})
+})*/
 /*
 curl command: curl -X PUT localhost:8000/api/pet/{id}/{name}
 */
-server.route({
+/*server.route({
   method: 'PUT',
   path: '/api/pet/{id}/{name}',
   handler: function (request, reply) {
@@ -128,6 +159,35 @@ server.route({
     })
 
   }
+})*/
+server.route({
+  method: 'POST',
+  path: '/api/pet/make',
+  handler: function (request, reply) {
+    var pet = seneca.make('pet');
+
+    pet.name = request.payload.name || 'default'
+    pet.type = request.payload.type || 'default'
+    pet.save$(function (err, data) {
+      //console.log(data);
+      reply(data);
+    })
+  }
+})
+
+server.route({
+  method: 'POST',
+  path: '/api/pet/{name}/{type}',
+  handler: function (request, reply) {
+    var pet = seneca.make('pet');
+
+    pet.name = request.params.name
+    pet.type = request.params.type
+    pet.save$(function(err, data) {
+      reply(data);
+    })
+
+  }
 })
 setupData(function() {
   // Start the server
@@ -140,3 +200,4 @@ setupData(function() {
   });
 
 });
+})
