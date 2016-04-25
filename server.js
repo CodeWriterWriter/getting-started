@@ -6,7 +6,6 @@ const Inert = require('inert');
 var seneca = require('seneca')()
 seneca.use('entity')
 
-
 function setupData(cb) {
 
   var done = _.after(2, cb);
@@ -63,39 +62,6 @@ server.route({
 
   }
 })
-server.route({
-  method: 'DELETE',
-  path: '/api/pet/{id}',
-  handler: function (request, reply) {
-    var pet = seneca.make('pet');
-
-    pet.remove$({ id: request.params.id}, function(err, data) {
-      console.log("deleted");
-      reply(data)
-    })
-
-  }
-})
-server.route({
-  method: 'PUT',
-  path: '/api/pet/{id}',
-  handler: function (request, reply) {
-    var pet = seneca.make('pet');
-    /*
-    curl -d name=tom -d type=hat  -X PUT localhost:8000/api/pet/b2uwe7
-    */
-    pet.load$({ id: request.params.id}, function(err, data) {
-      pet.name = request.payload.name || pet.name
-      pet.type = request.payload.type || pet.type
-      pet.id = request.params.id
-      pet.save$(function (err, data) {
-        //console.log(data);
-        reply(data);
-      })
-    })
-
-  }
-})
 /*
  curl command for list: curl -X GET localhost:8000/api/pet/list
 */
@@ -114,52 +80,12 @@ server.route({
 })
 server.route({
   method: 'GET',
-  path: '/api/pet/submit/form',
+  path: '/api/pet/make',
   handler: function (request, reply) {
-      reply.view('./index.html')
+      reply.view('./make.html')
   }
 })
-/*
-curl command: curl -X PUT localhost:8000/api/pet/{id}/{name}/{type}
-*/
-/*server.route({
-  method: 'PUT',
-  path: '/api/pet/{id}/{name}/{type}',
-  handler: function (request, reply) {
-    var pet = seneca.make('pet');
 
-    pet.load$({ id: request.params.id}, function(err, data) {
-      //console.log(data);
-      pet.id = request.params.id
-      pet.name = request.params.name
-      pet.type = request.params.type
-      pet.save$(function(err, data) {
-        reply(data);
-      })
-    })
-
-  }
-})*/
-/*
-curl command: curl -X PUT localhost:8000/api/pet/{id}/{name}
-*/
-/*server.route({
-  method: 'PUT',
-  path: '/api/pet/{id}/{name}',
-  handler: function (request, reply) {
-    var pet = seneca.make('pet');
-
-    pet.load$({ id: request.params.id}, function(err, data) {
-      //console.log(data);
-      pet.id = request.params.id
-      pet.name = request.params.name
-      pet.save$(function(err, data) {
-        reply(data);
-      })
-    })
-
-  }
-})*/
 server.route({
   method: 'POST',
   path: '/api/pet/make',
@@ -189,6 +115,43 @@ server.route({
 
   }
 })
+
+server.route({
+  method: 'PUT',
+  path: '/api/pet/{id}',
+  handler: function (request, reply) {
+    var pet = seneca.make('pet');
+    /*
+    curl -d name=tom -d type=hat  -X PUT localhost:8000/api/pet/b2uwe7
+    */
+    pet.load$({ id: request.params.id}, function(err, data) {
+      pet.name = request.payload.name || pet.name
+      pet.type = request.payload.type || pet.type
+      pet.id = request.params.id
+      pet.save$(function (err, data) {
+        //console.log(data);
+        reply(data);
+      })
+    })
+
+  }
+})
+
+server.route({
+  method: 'DELETE',
+  path: '/api/pet/{id}',
+  handler: function (request, reply) {
+    var pet = seneca.make('pet');
+
+    pet.remove$({ id: request.params.id}, function(err, data) {
+      console.log("deleted");
+      reply(data)
+    })
+
+  }
+})
+
+
 setupData(function() {
   // Start the server
   server.start((err) => {
