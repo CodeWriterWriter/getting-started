@@ -73,7 +73,8 @@ server.route({
 
     pet.list$(function(err, data) {
       //console.log(data);
-      reply(data);
+      //reply(data);
+      reply.view('./list.html', {list: data})
     })
 
   }
