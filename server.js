@@ -86,6 +86,13 @@ server.route({
       reply.view('./make.html')
   }
 })
+server.route({
+  method: 'GET',
+  path: '/api/pet/update',
+  handler: function (request, reply) {
+      reply.view('./update.html')
+  }
+})
 
 server.route({
   method: 'POST',
@@ -131,6 +138,26 @@ server.route({
       pet.id = request.params.id
       pet.save$(function (err, data) {
         //console.log(data);
+        reply(data);
+      })
+    })
+
+  }
+})
+server.route({
+  method: 'POST',
+  path: '/api/pet/update',
+  handler: function (request, reply) {
+    var pet = seneca.make('pet');
+    /*
+    curl -d name=tom -d type=hat  -X PUT localhost:8000/api/pet/b2uwe7
+    */
+    pet.load$({ id: request.payload.id}, function(err, data) {
+      pet.name = request.payload.name || pet.name
+      pet.type = request.payload.type || pet.type
+      pet.id = request.payload.id
+      pet.save$(function (err, data) {
+        console.log(data);
         reply(data);
       })
     })
