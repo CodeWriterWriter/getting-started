@@ -31,6 +31,7 @@ function setupData(cb) {
 
 // Create a server with a host and port
 const server = new Hapi.Server();
+module.exports = server
 server.register(require('vision'), (err) => {
 
 server.connection({
